@@ -1,0 +1,38 @@
+#!groovy
+
+apply plugin: "maven-publish"
+apply plugin: "com.jfrog.artifactory"
+
+artifactory {
+    contextUrl = artifactoryURL
+
+    publish {
+        repository {
+            repoKey = artifactoryPublishRepo
+            username = artifactoryUsername
+            password = artifactoryPassword
+        }
+        defaults {
+            publications("mavenJava")
+            properties = [
+                    "build.name"  : projectName,
+                    "build.number": buildNumber
+            ]
+            publishArtifacts = true
+            publishBuildInfo = true
+            publishPom = true
+            publishIvy = false
+        }
+        clientConfig.setIncludeEnvVars(false)
+        clientConfig.info.setBuildName(projectName)
+        clientConfig.info.setBuildNumber(buildNumber)
+    }
+
+    resolve {
+        repository {
+            repoKey = artifactoryResolveRepo
+            username = artifactoryUsername
+            password = artifactoryPassword
+        }
+    }
+}

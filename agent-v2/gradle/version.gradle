@@ -1,0 +1,21 @@
+#!groovy
+
+def getProjectVersion() {
+    def version = currentVersion
+
+    def defaultBranch = System.env['CI_DEFAULT_BRANCH'] != null ? System.env['CI_DEFAULT_BRANCH'] : "main"
+    def gitBranch = System.env['CI_COMMIT_REF_NAME'] != null ? System.env['CI_COMMIT_REF_NAME'] : grgit.branch.current().getName()
+
+    if (gitBranch != defaultBranch || artifactoryPublishRepo.contains("snapshot")) {
+        version += "-SNAPSHOT"
+    }
+
+    return version
+}
+
+ext {
+    getProjectVersion = this.&getProjectVersion
+}
+
+
+

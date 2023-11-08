@@ -1,0 +1,32 @@
+server:
+  port: 8082
+
+precisely:
+  agent:
+    service:
+      config:
+        aws:
+          s3:
+            name: sqs-message-storage
+          sqs:
+            masterUser:
+              region: ap-south-1
+              accessKey: AKIAZV3GNOBZT3UKNNGQ
+              secretKey: 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
+
+            responseQueue:
+              name: MasterResponse-Queue
+              url: https://sqs.ap-south-1.amazonaws.com/665397850227/MasterResponse-Queue
+              #name: MasterResponseQueue
+              #url: https://sqs.ap-south-1.amazonaws.com/665397850227/MasterResponseQueue
+
+
+
+
+
+
+
+#sqs:
+#  url: https://sqs.ap-south-1.amazonaws.com/665397850227/clientGroup1queue
+queue:
+  name: clientGroup1queue

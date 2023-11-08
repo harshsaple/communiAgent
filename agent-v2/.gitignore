@@ -1,0 +1,15 @@
+# System
+*~
+.DS_Store
+
+# Gradle
+.gradle/
+build/
+
+# Secrets
+.env
+
+#IDE Settings
+.idea
+
+gradle/wrapper/*

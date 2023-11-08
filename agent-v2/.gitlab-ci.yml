@@ -1,0 +1,73 @@
+stages:
+  - build
+  - publish
+  - deploy-dev
+
+include:
+  - project: "preciselydata/devops/gitlab/templates"
+    file: "/workflows/default-pipelines.gitlab-ci.yml"
+
+variables:
+  GRADLE_USER_HOME: ".gradle"
+  GRADLE_OPTS: "-Dorg.gradle.internal.launcher.welcomeMessageEnabled=false"
+  ORG_GRADLE_PROJECT_artifactoryURL: "${ARTIFACTORY_URL}"
+  ORG_GRADLE_PROJECT_artifactoryUsername: "${ARTIFACTORY_USERNAME}"
+  ORG_GRADLE_PROJECT_artifactoryPassword: "${ARTIFACTORY_PASSWORD}"
+
+default:
+  image: $PRIVATE_IMAGE_REGISTRY/gradle:7.4-jdk11
+  tags:
+    - global
+    - k8s
+  cache: &default_cache
+    key: $CI_COMMIT_REF_SLUG
+    paths:
+      - ${GRADLE_USER_HOME}/caches
+    policy: pull
+
+build:
+  stage: build
+  script:
+    - echo "VERSION=$(gradle -q printVersion)" >> version.env
+    - ./gradlew build
+  artifacts:
+    paths:
+      - "**/build/libs/*.jar"
+    reports:
+      junit:
+        - "**/build/test-results/test/**/TEST-*.xml"
+      dotenv: version.env
+  cache:
+    <<: *default_cache
+    policy: push
+
+jar:snapshot:
+  stage: publish
+  variables:
+    ORG_GRADLE_PROJECT_buildNumber: "${CI_PIPELINE_ID}"
+    ORG_GRADLE_PROJECT_artifactoryPublishRepo: "di-snapshot-local"
+  script:
+    - ./gradlew artifactoryPublish
+  rules:
+    - if: '$CI_MERGE_REQUEST_IID'
+
+jar:staging:
+  stage: publish
+  variables:
+    ORG_GRADLE_PROJECT_buildNumber: "${CI_PIPELINE_ID}"
+    ORG_GRADLE_PROJECT_artifactoryPublishRepo: "di-staging-local"
+  script:
+    - ./gradlew artifactoryPublish
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH'
+
+docker:
+  stage: publish
+  image: $PRIVATE_IMAGE_REGISTRY/docker:20.10
+  services:
+    - name: $PRIVATE_IMAGE_REGISTRY/docker:20.10-dind
+      alias: docker
+  before_script:
+    - apk add bash
+  script:
+    - bash docker/build.sh

@@ -1,0 +1,14 @@
+precisely:
+  agent:
+    service:
+      config:
+        aws:
+          s3:
+            name: sqs-message-storage
+          sqs:
+            responseQueue:
+              #name: MasterResponseQueue
+              #url: https://sqs.ap-south-1.amazonaws.com/665397850227/MasterResponseQueue
+              name: MasterResponse-Queue
+              url: https://sqs.ap-south-1.amazonaws.com/665397850227/MasterResponse-Queue
+

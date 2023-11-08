@@ -1,0 +1,12 @@
+#!groovy
+
+ext {
+    springJms = "5.3.15"
+    awsSdkBom = "2.17.133"
+    softwareAwsSdkSqs = "2.17.133"
+    sqsJavaMessagingLib = "1.0.8"
+    sqsJavaMessagingExtendedClient = "2.0.2"
+    awsJavaSdkS3 = "1.12.163"
+    jsonVersion = "20210307"
+    lombokVersion = '1.18.22'
+}
